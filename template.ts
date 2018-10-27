@@ -1,146 +1,130 @@
 const container = document.querySelector('.container')!;
 
-const appendSmallCard = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>(
-		'#template-card-s'
-	)!.content;
+const createCard = (
+	event: Api.Event,
+	templateSelector: string,
+	descriptionSelector: string,
+	corpusSelector: string
+): DocumentFragment => {
+	let content = document.querySelector<HTMLTemplateElement>(templateSelector)!
+		.content;
 	let card = document.importNode(content, true);
 	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.devices')!.textContent = event.source;
-	card.querySelector('.time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-	}.svg`;
+	if (event.source) {
+		card.querySelector('#source')!.textContent = event.source;
+	}
+	card.querySelector('#time')!.textContent = event.time;
+	if (event.icon) {
+		card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
+			event.icon
+		}.svg`;
+	}
 	if (event.description) {
-		card.querySelector('.description_size-s')!.textContent =
+		card.querySelector(descriptionSelector)!.textContent =
 			event.description;
 	} else {
-		card.querySelector<HTMLElement>('.card_bottom')!.style.display = 'none';
+		card.querySelector<HTMLElement>(corpusSelector)!.style.display = 'none';
+	}
+	return card;
+};
+
+const appendSmallCard = (event: Api.Event): void => {
+	let card = createCard(
+		event,
+		'#template-card-s',
+		'.description_size-s',
+		'.card_bottom'
+	);
+	container.appendChild(card);
+};
+
+const appendMiddleCardThermal = (event: Api.Event) : void => {
+	let card = createCard(
+		event,
+		'#template-card-m-thermal',
+		'.description_size-m',
+		'.card_bottom'
+	);
+	if (event.data) {
+		const data = event.data as Api.ThermalData;
+		card.querySelector('.left_flex > .exact_data')!.textContent = `${
+			data.temperature
+		} C`;
+		card.querySelector('.right_flex > .exact_data')!.textContent = `${
+			data.humidity
+		} %`;
 	}
 	container.appendChild(card);
 };
 
-const appendMiddleCardThermal = (event: Api.Event) => {
-    let content = document.querySelector<HTMLTemplateElement>('#template-card-m-thermal')!.content;
-    let card = document.importNode(content, true);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-		}.svg`;
-	if (event.description) {
-		card.querySelector('.description_size-m')!.textContent = event.description;
-	} else {
-		card.querySelector<HTMLElement>('.card_bottom')!.style.display = 'none';
-	}
-    if (event.data) {
-		const data = event.data as Api.ThermalData;
-		card.querySelector('.left_flex > .exact_data')!.textContent = `${data.temperature} C`;
-		card.querySelector('.right_flex > .exact_data')!.textContent = `${data.humidity} %`;
-    }
-    container.appendChild(card);
-};
-
-const appendMiddleCardFridge = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>('#template-card-m-fridge')!.content;
-	let card = document.importNode(content, true);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-		}.svg`;
-	if (event.description) {
-		card.querySelector('.description_size-m')!.textContent = event.description;
-	} else {
-		card.querySelector<HTMLElement>('.card_bottom')!.style.display = 'none';
-	}
+const appendMiddleCardFridge = (event: Api.Event) : void => {
+	let card = createCard(
+		event,
+		'#template-card-m-fridge',
+		'.description_size-m',
+		'.card_bottom'
+	);
 	if (event.data) {
 		const data = event.data as Api.FridgeData;
-		card.querySelector('.button-yes > .choice')!.textContent = `${data.buttons[0]}`;
-		card.querySelector('.button-no > .choice')!.textContent = `${data.buttons[1]}`;
+		card.querySelector('.button-yes > .choice')!.textContent = `${
+			data.buttons[0]
+		}`;
+		card.querySelector('.button-no > .choice')!.textContent = `${
+			data.buttons[1]
+		}`;
 	}
 	container.appendChild(card);
 };
 
-const appendMiddleCardMusic = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>(
-		'#template-card-m-music'
-	)!.content;
-	let card = document.importNode(content, true);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-	}.svg`;
-	if (event.description) {
-		card.querySelector('.description_size-m')!.textContent =
-			event.description;
-	} else {
-		card.querySelector<HTMLElement>('.card_bottom')!.style.display = 'none';
-	}
+const appendMiddleCardMusic = (event: Api.Event): void  => {
+	let card = createCard(
+		event,
+		'#template-card-m-music',
+		'.description_size-m',
+		'.card_bottom'
+	);
 	if (event.data) {
 		const data = event.data as Api.MusicData;
-		card.querySelector('.name_of_the_song')!.textContent = `${data.artist} - ${data.track.name}`;
-		card.querySelector('.range_and_time > .details')!.textContent = `${data.track.length}`;
-		card.querySelector('.control_panel > .details')!.textContent = `${data.volume} %`;
+		card.querySelector('.name_of_the_song')!.textContent = `${
+			data.artist
+		} - ${data.track.name}`;
+		card.querySelector('.range_and_time > .details')!.textContent = `${
+			data.track.length
+		}`;
+		card.querySelector('.control_panel > .details')!.textContent = `${
+			data.volume
+		} %`;
 	}
 	container.appendChild(card);
 };
 
-const appendMiddleCardAc = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>(
-		'#template-card-m-ac'
-	)!.content;
-	let card = document.importNode(content, true);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-		}.svg`;
-	if (event.description) {
-		card.querySelector('.description')!.textContent = event.description;
-	} else {
-		card.querySelector<HTMLElement>('.card_bottom')!.style.display = 'none';
-	}
+const appendMiddleCardAc = (event: Api.Event): void  => {
+	let card = createCard(
+		event,
+		'#template-card-m-ac',
+		'.description',
+		'.card_bottom'
+	);
 	container.appendChild(card);
 };
 
-const appendLargeCardCam = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>(
-		'#template-card-l-cam'
-	)!.content;
-	let card = document.importNode(content, true);
+const appendLargeCardCam = (event: Api.Event): void => {
+	let card = createCard(
+		event,
+		'#template-card-l-cam',
+		'.description',
+		'.corpus'
+	);
 	container.appendChild(card);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	if (event.description) {
-		card.querySelector('.description')!.textContent = event.description;
-	} else {
-		card.querySelector<HTMLElement>('.corpus')!.style.display = 'none';
-	}
 };
 
-const appendLargeCardStats = (event: Api.Event) => {
-	let content = document.querySelector<HTMLTemplateElement>(
-		'#template-card-l-stats'
-	)!.content;
-	let card = document.importNode(content, true);
-	card.querySelector('.title')!.textContent = event.title;
-	card.querySelector('.card-source')!.textContent = event.source;
-	card.querySelector('.card-time')!.textContent = event.time;
-	card.querySelector<HTMLImageElement>('.icons')!.src = `assets/${
-		event.icon
-		}.svg`;
-	if (event.description) {
-		card.querySelector('.description_size-l')!.textContent = event.description;
-	} else {
-		card.querySelector<HTMLElement>('.corpus')!.style.display = 'none';
-	}
+const appendLargeCardStats = (event: Api.Event): void  => {
+	let card = createCard(
+		event,
+		'#template-card-l-stats',
+		'.description_size-l',
+		'.corpus'
+	);
 	container.appendChild(card);
 };
 
@@ -152,14 +136,14 @@ namespace Api {
 		description: string | null;
 		icon: string;
 		size: string;
-        source: string | null;
-        data: Object | null;
-    }
-    
-    export interface ThermalData {
+		source: string | null;
+		data: Object | null;
+	}
+
+	export interface ThermalData {
 		temperature: number;
 		humidity: number;
-    }
+	}
 
 	export interface FridgeData {
 		buttons: Array<string>;
@@ -170,7 +154,6 @@ namespace Api {
 		artist: string;
 		track: MusicTrackData;
 		volume: number;
-		
 	}
 
 	export interface MusicTrackData {
@@ -187,30 +170,25 @@ namespace Api {
 	}
 }
 
-function addEvents(data: Api.Data) {
+function addEvents(data: Api.Data): void  {
 	data.events.forEach(event => {
 		if (event.size === 's') {
 			appendSmallCard(event);
-        }
-        else if(event.size === 'm') {
-            if(event.icon === 'thermal') {
-                appendMiddleCardThermal(event);
-			}
-			else if(event.icon === 'fridge') {
+		} else if (event.size === 'm') {
+			if (event.icon === 'thermal') {
+				appendMiddleCardThermal(event);
+			} else if (event.icon === 'fridge') {
 				appendMiddleCardFridge(event);
-			}
-			else if (event.icon === 'music') {
+			} else if (event.icon === 'music') {
 				appendMiddleCardMusic(event);
-			}
-			else if (event.icon === 'ac') {
+			} else if (event.icon === 'ac') {
 				appendMiddleCardAc(event);
 			}
 		}
-		if(event.size === 'l') {
-			if(event.icon === 'cam') {
+		if (event.size === 'l') {
+			if (event.icon === 'cam') {
 				appendLargeCardCam(event);
-			}
-			else if(event.icon === 'stats') {
+			} else if (event.icon === 'stats') {
 				appendLargeCardStats(event);
 			}
 		}
