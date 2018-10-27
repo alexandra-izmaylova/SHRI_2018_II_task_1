@@ -334,12 +334,19 @@ footer p {
 }
 
 .camera {     
-/*	position: absolute;
+	position: absolute;
 	touch-action: none;
-	transform-origin: left top; */      
-	margin-top: 24px;
-	height: auto;
+	transform-origin: left top;    
+}
+
+.container_image {
+	margin-top: 10px;
 	width: 100%;
+	height: 265px;
+	border: 2px solid black;
+	overflow: hidden;
+	position: relative;
+	border-radius: 20px;
 }
 
 .music {
@@ -597,6 +604,7 @@ footer p {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	margin-top: 10px;
 }
 
 
